@@ -1,6 +1,6 @@
 BOOST_PATH=../boost-1.47.0/ 
 
-all:
+all release debug:
 	g++ -c sqlite3cpp.cpp -Wall -I$(BOOST_PATH)
 	mkdir -p lib
 	ar rcs lib/libsqlite3cpp.a *.o 
@@ -8,6 +8,8 @@ all:
 clean:
 	rm -f *.o
 	rm -rf ./lib
+    
+install:
     
 buildtestinsert:
 	rm -f ./testinsert ./test.db
