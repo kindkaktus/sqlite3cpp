@@ -20,7 +20,7 @@ Prerequisites:
     - libsqlite C library with developent headers shall be available 
     - boost::format is required (http://www.boost.org/) to build the library
     
-To build static library libsqlite3cpp.a<br>:
+To build static library libsqlite3cpp.a:<br>
     <code>make</code>
     
 Optionally run tests by invoking:<br>
