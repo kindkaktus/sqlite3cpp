@@ -16,16 +16,15 @@ The library was initially a clone from SQlite3pp from https://code.google.com/p/
 
 INSTALLATION
 --------------
-PRE:
+Prerequisites:
     - libsqlite C library with developent headers shall be available 
     - boost::format is required (http://www.boost.org/) to build the library
     
-BUILD:
-To build static library libsqlite3cpp.a, say
-    make
+To build static library libsqlite3cpp.a<br>:
+    <code>make</code>
     
-Optionally run tests by invoking
-    make test
+Optionally run tests by invoking:<br>
+    <code>make test</code>
     
 
     
