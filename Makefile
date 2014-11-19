@@ -1,7 +1,5 @@
-BOOST_PATH=../boost-1.47.0/ 
-
 all release debug:
-	g++ -c sqlite3cpp.cpp -Wall -I$(BOOST_PATH)
+	g++ -c sqlite3cpp.cpp -Wall -I../$(BOOST_DIR)
 	mkdir -p lib
 	ar rcs lib/libsqlite3cpp.a *.o 
 
@@ -13,11 +11,11 @@ install:
     
 buildtestinsert:
 	rm -f ./testinsert ./test.db
-	g++ testinsert.cpp -Wall -I./ -I$(BOOST_PATH) -lsqlite3 lib/libsqlite3cpp.a  -o testinsert
+	g++ testinsert.cpp -Wall -I./ -I../$(BOOST_DIR) -lsqlite3 lib/libsqlite3cpp.a  -o testinsert
     
 buildtestselect:
 	rm -f ./testselect ./test.db
-	g++ testselect.cpp -Wall -I./ -I$(BOOST_PATH) -lsqlite3 lib/libsqlite3cpp.a  -o testselect
+	g++ testselect.cpp -Wall -I./ -I../$(BOOST_DIR) -lsqlite3 lib/libsqlite3cpp.a  -o testselect
 
 test: buildtestinsert buildtestselect
 	./testinsert
