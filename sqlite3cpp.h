@@ -37,44 +37,44 @@ namespace sqlite3cpp
 {
     class null_type {};
     extern null_type ignore;
-    
+
     enum ClearBindings
     {
         clearBindingsOff, clearBindingsOn
-    };    
+    };
 
     class database : boost::noncopyable
     {
-      friend class statement;
-      friend class database_error;
+        friend class statement;
+        friend class database_error;
 
     public:
-      database();
-      database(const std::string& aDbPath, const std::string& aDbCreateSql, const std::string& anExtensionPath = "");
-      ~database();
+        database();
+        database(const std::string& aDbPath, const std::string& aDbCreateSql, const std::string& anExtensionPath = "");
+        ~database();
 
-      void open(const std::string& aDbPath, const std::string& aDbCreateSql, const std::string& anExtensionPath = "");
-      void close();
+        void open(const std::string& aDbPath, const std::string& aDbCreateSql, const std::string& anExtensionPath = "");
+        void close();
 
-      sqlite3_int64 last_insert_rowid() const;
+        sqlite3_int64 last_insert_rowid() const;
 
-      void execute(const std::string& anSql);
-      int set_busy_timeout(int ms);
-      // Foreign kets are effectively supported only from sqlite 3.6.19
-      void enable_foreign_keys(bool aEnable = true);
-      
+        void execute(const std::string& anSql);
+        int set_busy_timeout(int ms);
+        // Foreign kets are effectively supported only from sqlite 3.6.19
+        void enable_foreign_keys(bool aEnable = true);
+
     private:
-      void load_extension(const std::string& anExtensionPath);
-      
+        void load_extension(const std::string& anExtensionPath);
+
     private:
-      std::string theDbPath;
-      sqlite3* theDb;
+        std::string theDbPath;
+        sqlite3* theDb;
     };
 
     struct database_error : std::runtime_error
     {
-      explicit database_error(const std::string& aMsg);
-      database_error(database& db, const std::string& aMsg);
+        explicit database_error(const std::string& aMsg);
+        database_error(database& db, const std::string& aMsg);
     };
 
     class statement : boost::noncopyable
@@ -111,18 +111,18 @@ namespace sqlite3cpp
         void bind(const std::string& name, null_type);
 
         // stream-like bind using << operator
-        template <class T>  statement& operator << (T value) 
+        template <class T>  statement& operator << (T value)
         {
             bind(theCurBindIndx, value);
             ++theCurBindIndx;
             return *this;
-        }        
-        
-          
-     protected:
+        }
+
+
+    protected:
         statement(database& db, const std::string& anSql);
         ~statement();
-          
+
         int step();
     protected:
         database& theDb;
@@ -132,15 +132,15 @@ namespace sqlite3cpp
         int theCurBindIndx;
     };
 
-    
+
     class command : public statement
     {
     public:
-      command(database& db, const std::string& anSql);
-      void execute();
+        command(database& db, const std::string& anSql);
+        void execute();
     };
 
-    
+
     class query : public statement
     {
     public:
@@ -153,7 +153,7 @@ namespace sqlite3cpp
             {
                 return get(idx, T());
             }
-            
+
             template <class T> row& operator >> (T& value)
             {
                 value = get(theCurGetIndex, T());
@@ -162,46 +162,46 @@ namespace sqlite3cpp
             }
 
         private:
-          int get(int idx, int) const;
-          unsigned int get(int idx, unsigned int) const;
+            int get(int idx, int) const;
+            unsigned int get(int idx, unsigned int) const;
 #ifdef __OpenBSD__
-          size_t get(int idx, size_t) const;
+            size_t get(int idx, size_t) const;
 #endif
-          double get(int idx, double) const;
-          sqlite3_int64 get(int idx, sqlite3_int64) const;
-          char const* get(int idx, char const*) const;
-          std::string get(int idx, std::string) const;
-          void const* get(int idx, void const*) const;
-          null_type get(int idx, null_type) const;
+            double get(int idx, double) const;
+            sqlite3_int64 get(int idx, sqlite3_int64) const;
+            char const* get(int idx, char const*) const;
+            std::string get(int idx, std::string) const;
+            void const* get(int idx, void const*) const;
+            null_type get(int idx, null_type) const;
 
         private:
-          sqlite3_stmt* theStmt;
-          std::string theSql;
-          int theCurGetIndex;
+            sqlite3_stmt* theStmt;
+            std::string theSql;
+            int theCurGetIndex;
         }; // row
 
         class query_iterator : public boost::iterator_facade<query_iterator, row, boost::single_pass_traversal_tag, row>
         {
         public:
-          query_iterator();
-          explicit query_iterator(query* aQuery);
+            query_iterator();
+            explicit query_iterator(query* aQuery);
 
         private:
-          friend class boost::iterator_core_access;
+            friend class boost::iterator_core_access;
 
-          void increment();
-          bool equal(query_iterator const& other) const;
+            void increment();
+            bool equal(query_iterator const& other) const;
 
-          row dereference() const;
+            row dereference() const;
 
-          query* theQuery;
-          int theRc;
+            query* theQuery;
+            int theRc;
         }; // query_iterator
 
         explicit query(database& db, const std::string& anSql);
-        
+
         int column_count() const;
-        
+
         typedef query_iterator iterator;
         iterator begin();
         iterator end();
@@ -210,15 +210,15 @@ namespace sqlite3cpp
     class transaction : boost::noncopyable
     {
     public:
-      explicit transaction(database& db, bool fcommit = false, bool freserve = false);
-      ~transaction();
+        explicit transaction(database& db, bool fcommit = false, bool freserve = false);
+        ~transaction();
 
-      void commit();
-      void rollback();
+        void commit();
+        void rollback();
 
     private:
-      database* theDb;
-      bool theCcommit;
+        database* theDb;
+        bool theCcommit;
     };
 
 } // namespace sqlite3cpp

@@ -60,29 +60,29 @@ namespace sqlite3cpp
                 }
                 sqlite3_close(myDb);
             }
-        } 
+        }
 
     } // unnamed ns
-    
-    
+
+
     //
     // Database
     //
-    
-    database::database() 
-    : theDb(NULL)
+
+    database::database()
+        : theDb(NULL)
     {}
-    
-    database::database(const string& aDbPath, const string& aDbCreateSql, const string& anExtensionPath) 
-    : theDb(NULL)
+
+    database::database(const string& aDbPath, const string& aDbCreateSql, const string& anExtensionPath)
+        : theDb(NULL)
     {
-        if (!aDbPath.empty()) 
+        if (!aDbPath.empty())
             open(aDbPath, aDbCreateSql, anExtensionPath);
     }
 
     database::~database()
     {
-        try  { close(); } 
+        try  { close(); }
         catch (...) {}
     }
 
@@ -90,20 +90,20 @@ namespace sqlite3cpp
     {
         close();
         createIfNotExist(aDbPath, aDbCreateSql);
-        
+
         int rc = sqlite3_open(aDbPath.c_str(), &theDb);
         if (rc != SQLITE_OK)
             throw database_error(str(boost::format("Failed to open Db %s. Sqlite3 error code: %d") % aDbPath % rc));
 
         if (!anExtensionPath.empty())
             load_extension(anExtensionPath);
-            
+
         theDbPath = aDbPath;
     }
 
     void database::close()
     {
-        if (theDb) 
+        if (theDb)
         {
             if (sqlite3_close(theDb) != SQLITE_OK)
                 throw database_error(*this, "Failed to close Db.");
@@ -127,18 +127,18 @@ namespace sqlite3cpp
     {
         return sqlite3_busy_timeout(theDb, ms);
     }
-    
+
     void database::enable_foreign_keys(bool aEnable)
     {
         execute(str(boost::format("PRAGMA foreign_keys = %s;") % (aEnable?"ON":"OFF")));
     }
-    
+
     void database::load_extension(const string& anExtensionPath)
     {
         int ret = sqlite3_enable_load_extension(theDb, 1);
         if (ret != SQLITE_OK)
             throw database_error(str(boost::format("Failed to Db enable extensions. Error code: %d") % ret));
-            
+
         char* errMsg = NULL;
         ret = sqlite3_load_extension(theDb, anExtensionPath.c_str(), 0, &errMsg);
         if (ret != SQLITE_OK)
@@ -155,16 +155,16 @@ namespace sqlite3cpp
             }
         }
     }
-    
-    
+
+
     //
     // Statement
     //
 
-    statement::statement(database& db, const string& anSql) 
-    : theDb(db), theStmt(NULL), theCurBindIndx(1)
+    statement::statement(database& db, const string& anSql)
+        : theDb(db), theStmt(NULL), theCurBindIndx(1)
     {
-        if (!anSql.empty()) 
+        if (!anSql.empty())
             prepare(anSql);
     }
 
@@ -184,7 +184,7 @@ namespace sqlite3cpp
 
     void statement::finish()
     {
-        if (theStmt) 
+        if (theStmt)
         {
             if (sqlite3_finalize(theStmt) != SQLITE_OK)
                 throw database_error(theDb, str(boost::format("Failed to finalise query '%s'") % theSql));
@@ -193,19 +193,19 @@ namespace sqlite3cpp
             theCurBindIndx = 1;
         }
     }
-    
+
     void statement::reset(ClearBindings aClearBindings)
     {
         if (sqlite3_reset(theStmt) != SQLITE_OK)
             throw database_error(theDb, str(boost::format("Failed to reset query '%s'") % theSql));
-	    if (aClearBindings == clearBindingsOn)
+        if (aClearBindings == clearBindingsOn)
         {
             if (sqlite3_clear_bindings(theStmt) != SQLITE_OK)
-			    throw database_error(theDb, str(boost::format("Failed to clear bindings for query '%s'") % theSql));
+                throw database_error(theDb, str(boost::format("Failed to clear bindings for query '%s'") % theSql));
             theCurBindIndx = 1;
         }
     }
-    
+
     int statement::step()
     {
         return sqlite3_step(theStmt);
@@ -215,8 +215,8 @@ namespace sqlite3cpp
     {
         if (sqlite3_bind_int(theStmt, idx, value) != SQLITE_OK)
             throw database_error(theDb, str(boost::format("Failed to bind integer value at position %d for query '%s'") % idx % theSql));
-    }    
-    
+    }
+
     void statement::bind(int idx, unsigned int value)
     {
         if (value > INT_MAX)
@@ -224,7 +224,7 @@ namespace sqlite3cpp
         if (sqlite3_bind_int(theStmt, idx, value) != SQLITE_OK)
             throw database_error(theDb, str(boost::format("Failed to bind unsigned integer value at position %d for query '%s'") % idx % theSql));
     }
-    
+
 #ifdef __OpenBSD__
     void statement::bind(int idx, size_t value)
     {
@@ -277,14 +277,14 @@ namespace sqlite3cpp
             throw database_error(theDb, str(boost::format("Invalid bind placeholder %s for query '%s'") % name % theSql));
         return bind(idx, value);
     }
-    
+
     void statement::bind(const string& name, unsigned int value)
     {
         int idx = sqlite3_bind_parameter_index(theStmt, name.c_str());
         if (idx <= 0)
             throw database_error(theDb, str(boost::format("Invalid bind placeholder %s for query '%s'") % name % theSql));
         return bind(idx, value);
-    }    
+    }
 
 #ifdef __OpenBSD__
     void statement::bind(const string& name, size_t value)
@@ -295,7 +295,7 @@ namespace sqlite3cpp
         return bind(idx, value);
     }
 #endif
-    
+
     void statement::bind(const string& name, double value)
     {
         int idx = sqlite3_bind_parameter_index(theStmt, name.c_str());
@@ -341,19 +341,19 @@ namespace sqlite3cpp
         return bind(name);
     }
 
-    
+
     //
     // Command
     //
 
 
-    command::command(database& db, const string& anSql) 
-    : statement(db, anSql)
+    command::command(database& db, const string& anSql)
+        : statement(db, anSql)
     {}
 
     void command::execute()
     {
-        if (step() != SQLITE_DONE) 
+        if (step() != SQLITE_DONE)
             throw database_error(theDb, str(boost::format("Failed to execute command '%s'") % theSql));
     }
 
@@ -361,8 +361,8 @@ namespace sqlite3cpp
     //
     // Query
     //
-    
-    query::row::row(sqlite3_stmt* stmt, const string& anSql) 
+
+    query::row::row(sqlite3_stmt* stmt, const string& anSql)
         : theStmt(stmt), theSql(anSql), theCurGetIndex(1)
     {
         if (!theStmt)
@@ -373,15 +373,15 @@ namespace sqlite3cpp
     {
         if (idx > sqlite3_data_count(theStmt))
             throw database_error(str(boost::format("Column %d is out-of-bounds for query '%s'") % idx % theSql));
-            
+
         return sqlite3_column_int(theStmt, idx-1);
     }
-    
+
     unsigned int query::row::get(int idx, unsigned int) const
     {
         return static_cast<unsigned int>(get<int>(idx));
-    }    
-	
+    }
+
 #ifdef __OpenBSD__
     size_t query::row::get(int idx, size_t) const
     {
@@ -393,7 +393,7 @@ namespace sqlite3cpp
     {
         if (idx > sqlite3_data_count(theStmt))
             throw database_error(str(boost::format("Column %d is out-of-bounds for query '%s'") % idx % theSql));
-            
+
         return sqlite3_column_double(theStmt, idx-1);
     }
 
@@ -401,7 +401,7 @@ namespace sqlite3cpp
     {
         if (idx > sqlite3_data_count(theStmt))
             throw database_error(str(boost::format("Column %d is out-of-bounds for query '%s'") % idx % theSql));
-    
+
         return sqlite3_column_int64(theStmt, idx-1);
     }
 
@@ -409,7 +409,7 @@ namespace sqlite3cpp
     {
         if (idx > sqlite3_data_count(theStmt))
             throw database_error(str(boost::format("Column %d is out-of-bounds for query '%s'") % idx % theSql));
-    
+
         return reinterpret_cast<char const*>(sqlite3_column_text(theStmt, idx-1));
     }
 
@@ -422,7 +422,7 @@ namespace sqlite3cpp
     {
         if (idx > sqlite3_data_count(theStmt))
             throw database_error(str(boost::format("Column %d is out-of-bounds for query '%s'") % idx % theSql));
-    
+
         return sqlite3_column_blob(theStmt, idx-1);
     }
 
@@ -431,14 +431,14 @@ namespace sqlite3cpp
         return ignore;
     }
 
-    query::query_iterator::query_iterator() 
-    : theQuery(NULL)
+    query::query_iterator::query_iterator()
+        : theQuery(NULL)
     {
         theRc = SQLITE_DONE;
     }
-    
-    query::query_iterator::query_iterator(query* aQuery) 
-    : theQuery(aQuery) 
+
+    query::query_iterator::query_iterator(query* aQuery)
+        : theQuery(aQuery)
     {
         if (!theQuery)
             throw database_error("NULL query passed");
@@ -464,14 +464,14 @@ namespace sqlite3cpp
     query::row query::query_iterator::dereference() const
     {
         if (!theQuery)
-            throw database_error("Cannot dereference NULL query");    
+            throw database_error("Cannot dereference NULL query");
         return row(theQuery->theStmt, theQuery->theSql);
     }
 
-    query::query(database& db, const string& anSql) 
-    : statement(db, anSql)
+    query::query(database& db, const string& anSql)
+        : statement(db, anSql)
     {}
-    
+
     int query::column_count() const
     {
         return sqlite3_column_count(theStmt);
@@ -487,12 +487,12 @@ namespace sqlite3cpp
     {
         return query_iterator();
     }
-    
-    
+
+
     //
     // Transaction
     //
-    
+
     transaction::transaction(database& db, bool fcommit, bool freserve) : theDb(&db), theCcommit(fcommit)
     {
         theDb->execute(freserve ? "BEGIN IMMEDIATE" : "BEGIN");
@@ -500,7 +500,7 @@ namespace sqlite3cpp
 
     transaction::~transaction()
     {
-        if (theDb) 
+        if (theDb)
         {
             try { theDb->execute(theCcommit ? "COMMIT" : "ROLLBACK"); }
             catch (...) {}
@@ -522,12 +522,12 @@ namespace sqlite3cpp
     }
 
 
-    database_error::database_error(const string& aMsg) 
-    : std::runtime_error(aMsg)
+    database_error::database_error(const string& aMsg)
+        : std::runtime_error(aMsg)
     {}
 
-    database_error::database_error(database& db, const string& aMsg) 
-    : std::runtime_error(str(boost::format("%s. %s. Db at %s") % aMsg % sqlite3_errmsg(db.theDb) % db.theDbPath))
+    database_error::database_error(database& db, const string& aMsg)
+        : std::runtime_error(str(boost::format("%s. %s. Db at %s") % aMsg % sqlite3_errmsg(db.theDb) % db.theDbPath))
     {}
 
 
