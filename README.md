@@ -20,10 +20,10 @@ Prerequisites:
     - boost
 
 To build static library libsqlite3cpp.a:<br>
-    <code>BOOST_INCLUDE_DIR=\<boost-include-directory\> make</code>
+    <code>make</code>
 
 Optionally run tests by invoking:<br>
-    <code>BOOST_INCLUDE_DIR=\<boost-include-directory\> make test</code>
+    <code>make test</code>
 
 
 
