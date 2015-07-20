@@ -7,8 +7,9 @@ clean:
 	rm -f *.o
 	rm -rf ./lib
 
+# @todo support other distros
 deps:
-	apt-get install libboost-dev
+	apt-get install libboost-dev libsqlite3-dev
 
 install:
 
