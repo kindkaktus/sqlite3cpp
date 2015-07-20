@@ -1,8 +1,6 @@
 sqlite3cpp
 ==========
 
-Last update: 3 August 2014
-
 SQLite3cpp is a C++ wrapper to SQLite3 C API.
 
 The library was initially a clone from SQlite3pp from https://code.google.com/p/sqlite3pp/. The following adjustments were made to the original library:
