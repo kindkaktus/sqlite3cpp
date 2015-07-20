@@ -7,6 +7,7 @@
 #include <map>
 #include <iostream>
 #include <stdexcept>
+#include <cstdio>
 
 struct ContactInfo
 {
@@ -59,7 +60,7 @@ int main(int argc, char* argv[])
 {
     try
     {
-        remove("test.db");
+        ::remove("test.db");
         sqlite3cpp::database db("test.db", getSqlCreate());
         sqlite3cpp::query qry(db, "SELECT id, name, phone FROM contacts");
 
