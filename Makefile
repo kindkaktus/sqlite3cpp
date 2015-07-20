@@ -7,6 +7,9 @@ clean:
 	rm -f *.o
 	rm -rf ./lib
 
+deps:
+	apt-get install libboost-dev
+
 install:
 
 buildtestinsert:
