@@ -15,11 +15,11 @@ install:
 
 buildtestinsert:
 	rm -f ./testinsert ./test.db
-	g++ testinsert.cpp -Wall -I./ -I../$(BOOST_INCLUDE_DIR) -lsqlite3 lib/libsqlite3cpp.a  -o testinsert
+	g++ testinsert.cpp -Wall -I./ -I../$(BOOST_INCLUDE_DIR) lib/libsqlite3cpp.a -lsqlite3 -o testinsert
 
 buildtestselect:
 	rm -f ./testselect ./test.db
-	g++ testselect.cpp -Wall -I./ -I../$(BOOST_INCLUDE_DIR) -lsqlite3 lib/libsqlite3cpp.a  -o testselect
+	g++ testselect.cpp -Wall -I./ -I../$(BOOST_INCLUDE_DIR) lib/libsqlite3cpp.a -lsqlite3 -o testselect
 
 test: buildtestinsert buildtestselect
 	./testinsert
