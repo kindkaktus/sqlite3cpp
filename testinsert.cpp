@@ -1,6 +1,7 @@
 #include "sqlite3cpp.h"
 #include "boost/format.hpp"
 #include <iostream>
+#include <cstdio>
 
 static const std::string SqlCreate =
     "BEGIN TRANSACTION;\n"
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
 {
     try
     {
-        remove("test.db");
+        ::remove("test.db");
         sqlite3cpp::database db("test.db", SqlCreate);
 
         {
