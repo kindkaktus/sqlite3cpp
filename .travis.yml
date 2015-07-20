@@ -1,6 +1,6 @@
 language: cpp
 install:
-  - sudo OSNAME=linux make deps
+  - sudo make deps
 script:
-  - OSNAME=linux make all
-  - OSNAME=linux make test
+  - make all
+  - make test
