@@ -21,10 +21,10 @@ Prerequisites:
     - boost::format is required (http://www.boost.org/) to build the library
     
 To build static library libsqlite3cpp.a:<br>
-    <code>make</code>
+    <code>BOOST_INCLUDE_DIR=<boost-include-directory> make</code>
     
 Optionally run tests by invoking:<br>
-    <code>make test</code>
+    <code>BOOST_INCLUDE_DIR=<boost-include-directory> make test</code>
     
 
     
