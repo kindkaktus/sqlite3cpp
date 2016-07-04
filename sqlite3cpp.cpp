@@ -2,7 +2,7 @@
 //
 // The MIT License
 //
-// Copyright (c) 2012-2014 Andrei Korostelev
+// Copyright (c) 2012-2016 Andrei Korostelev
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -213,27 +213,27 @@ namespace sqlite3cpp
 
     void statement::bind(int idx, int value)
     {
+        bind(idx, static_cast<long int>(value));
+    }
+
+    void statement::bind(int idx, long int value)
+    {
         if (sqlite3_bind_int(theStmt, idx, value) != SQLITE_OK)
             throw database_error(theDb, str(boost::format("Failed to bind integer value at position %d for query '%s'") % idx % theSql));
     }
 
     void statement::bind(int idx, unsigned int value)
     {
+        bind(idx, static_cast<unsigned long>(value));
+    }
+
+    void statement::bind(int idx, unsigned long value)
+    {
         if (value > INT_MAX)
-            throw database_error(str(boost::format("Failed to bind unsigned integer value %u because it cannot be promoted to an integer") % value));
+            throw database_error(str(boost::format("Failed to bind unsigned integer value %1% because it cannot be promoted to an integer") % value));
         if (sqlite3_bind_int(theStmt, idx, value) != SQLITE_OK)
             throw database_error(theDb, str(boost::format("Failed to bind unsigned integer value at position %d for query '%s'") % idx % theSql));
     }
-
-#ifdef __OpenBSD__
-    void statement::bind(int idx, size_t value)
-    {
-        if (value > INT_MAX)
-            throw database_error(str(boost::format("Failed to bind size_t value %u because it cannot be promoted to an integer") % value));
-        if (sqlite3_bind_int(theStmt, idx, value) != SQLITE_OK)
-            throw database_error(theDb, str(boost::format("Failed to bind size_t value at position %d for query '%s'") % idx % theSql));
-    }
-#endif
 
     void statement::bind(int idx, double value)
     {
@@ -272,6 +272,11 @@ namespace sqlite3cpp
 
     void statement::bind(const string& name, int value)
     {
+        bind(name, static_cast<long int>(value));
+    }
+
+    void statement::bind(const string& name, long int value)
+    {
         int idx = sqlite3_bind_parameter_index(theStmt, name.c_str());
         if (idx <= 0)
             throw database_error(theDb, str(boost::format("Invalid bind placeholder %s for query '%s'") % name % theSql));
@@ -280,21 +285,18 @@ namespace sqlite3cpp
 
     void statement::bind(const string& name, unsigned int value)
     {
-        int idx = sqlite3_bind_parameter_index(theStmt, name.c_str());
-        if (idx <= 0)
-            throw database_error(theDb, str(boost::format("Invalid bind placeholder %s for query '%s'") % name % theSql));
-        return bind(idx, value);
+        bind(name, static_cast<unsigned long>(value));
     }
 
-#ifdef __OpenBSD__
-    void statement::bind(const string& name, size_t value)
+    void statement::bind(const string& name, unsigned long value)
     {
+        if (value > INT_MAX)
+            throw database_error(str(boost::format("Failed to bind unsigned integer value %1% because it cannot be promoted to an integer") % value));
         int idx = sqlite3_bind_parameter_index(theStmt, name.c_str());
         if (idx <= 0)
             throw database_error(theDb, str(boost::format("Invalid bind placeholder %s for query '%s'") % name % theSql));
         return bind(idx, value);
     }
-#endif
 
     void statement::bind(const string& name, double value)
     {
@@ -369,6 +371,7 @@ namespace sqlite3cpp
             throw database_error("Statement is NULL");
     }
 
+
     int query::row::get(int idx, int) const
     {
         if (idx > sqlite3_data_count(theStmt))
@@ -377,17 +380,20 @@ namespace sqlite3cpp
         return sqlite3_column_int(theStmt, idx-1);
     }
 
+    long int query::row::get(int idx, long int) const
+    {
+        return static_cast<long int>(get<long int>(idx));
+    }
+
     unsigned int query::row::get(int idx, unsigned int) const
     {
         return static_cast<unsigned int>(get<int>(idx));
     }
 
-#ifdef __OpenBSD__
-    size_t query::row::get(int idx, size_t) const
+    unsigned long query::row::get(int idx, unsigned long int) const
     {
-        return static_cast<size_t>(get<int>(idx));
+        return static_cast<unsigned long>(get<int>(idx));
     }
-#endif
 
     double query::row::get(int idx, double) const
     {

@@ -2,7 +2,7 @@
 //
 // The MIT License
 //
-// Copyright (c) 2012-2014 Andrei Korostelev
+// Copyright (c) 2012-2016 Andrei Korostelev
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -86,10 +86,9 @@ namespace sqlite3cpp
 
         // positional bind (index is 1-based)
         void bind(int idx, int value);
+        void bind(int idx, long int value);
         void bind(int idx, unsigned int value);
-#ifdef __OpenBSD__
-        void bind(int idx, size_t value);
-#endif
+        void bind(int idx, unsigned long value);
         void bind(int idx, double value);
         void bind(int idx, sqlite3_int64 value);
         void bind(int idx, const std::string& value);
@@ -99,10 +98,9 @@ namespace sqlite3cpp
 
         // name bind
         void bind(const std::string& name, int value);
+        void bind(const std::string& name, long int value);
         void bind(const std::string& name, unsigned int value);
-#ifdef __OpenBSD__
-        void bind(const std::string& name, size_t value);
-#endif
+        void bind(const std::string& name, unsigned long value);
         void bind(const std::string& name, double value);
         void bind(const std::string& name, sqlite3_int64 value);
         void bind(const std::string& name, const std::string& value);
@@ -163,10 +161,9 @@ namespace sqlite3cpp
 
         private:
             int get(int idx, int) const;
+            long int get(int idx, long int) const;
             unsigned int get(int idx, unsigned int) const;
-#ifdef __OpenBSD__
-            size_t get(int idx, size_t) const;
-#endif
+            unsigned long get(int idx, unsigned long) const;
             double get(int idx, double) const;
             sqlite3_int64 get(int idx, sqlite3_int64) const;
             char const* get(int idx, char const*) const;
