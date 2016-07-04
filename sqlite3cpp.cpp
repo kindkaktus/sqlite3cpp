@@ -382,7 +382,7 @@ namespace sqlite3cpp
 
     long int query::row::get(int idx, long int) const
     {
-        return static_cast<long int>(get<long int>(idx));
+        return static_cast<long int>(get<int>(idx));
     }
 
     unsigned int query::row::get(int idx, unsigned int) const
